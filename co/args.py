@@ -68,6 +68,12 @@ def parse_args():
     parser.add_argument('--use_pseudo_gt',
                         help='Only applicable in single-frame model',
                         default=False, type=str2bool)
+    parser.add_argument('--use_stereo',
+                        help='Compare to the stereo frame instead of pattern if right camera image is available.',
+                        default=False, type=str2bool)
+    parser.add_argument('--ph_multiscale',
+                        help='Apply the photometric loss at multiple scales',
+                        default=False, type=str2bool)
 
     args = parser.parse_args()
 

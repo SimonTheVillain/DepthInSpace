@@ -68,7 +68,10 @@ class Worker(worker.Worker):
       self.patterns.append(pat)
 
       pat = torch.cat([pat for idx in range(3)], dim=1)
-      ph_loss = networks.RectifiedPatternSimilarityLoss(imsize[0],imsize[1], pattern=pat)
+      if self.use_stereo:
+        ph_loss = networks.RectifiedSimilarityLoss(imsize[0], imsize[1])
+      else:
+        ph_loss = networks.RectifiedPatternSimilarityLoss(imsize[0], imsize[1], pattern=pat)
 
       K = test_set.getK(sidx)
       Ki = np.linalg.inv(K)
@@ -103,15 +106,22 @@ class Worker(worker.Worker):
       out = [out]
 
     vals = []
+    if self.ph_multiscale:
+      print(f"shit! not much multiscale if out only has length{len(out)}")
 
     # apply photometric loss
     for s,o in zip(itertools.count(), out):
       im = self.data[f'im0']
+      imr = self.data[f"imr0"]
       im = im.view(-1, *im.shape[2:])
       o = o.view(-1, *o.shape[2:])
       std = self.data[f'std0']
       std = std.view(-1, *std.shape[2:])
-      val, pattern_proj = self.ph_losses[0](o, im[:,0:1,...], std)
+      if self.use_stereo:
+        imr = imr.view(-1, *imr.shape[2:])
+        val, pattern_proj = self.ph_losses[0](o, im[:,0:1,...], imr[:,0:1,...], std)
+      else:
+        val, pattern_proj = self.ph_losses[0](o, im[:,0:1,...], std)
       vals.append(val / (2 ** s))
 
     # apply disparity loss

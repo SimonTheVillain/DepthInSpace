@@ -140,6 +140,8 @@ class Worker(object):
     self.warmup_epochs = args.warmup_epochs
     self.seed = seed
     self.train_batch_size = args.train_batch_size
+    self.use_stereo = args.use_stereo
+    self.ph_multiscale = args.ph_multiscale
     self.test_batch_size = test_batch_size
     self.num_workers = num_workers
     self.save_frequency = save_frequency

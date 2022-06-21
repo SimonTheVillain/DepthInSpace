@@ -88,19 +88,26 @@ class TrackSynDataset(base_dataset.BaseDataset):
     ret['id'] = idx
 
     with h5py.File(os.path.join(sample_path,f'frames.hdf5'), "r") as sample_frames:
+      has_right = "imr" in sample_frames.keys()
       # load imgs, at all scales
       for sidx in range(len(self.imsizes)):
         im = sample_frames['im']
         amb = sample_frames['ambient']
         grad = sample_frames['grad']
+        if has_right:
+          imr = sample_frames["imr"]
         if sidx == 0:
           ret[f'im{sidx}'] = np.stack([im[tidx, ...] for tidx in track_ind], axis=0)
           ret[f'ambient{sidx}'] = np.stack([amb[tidx, ...] for tidx in track_ind], axis=0)
           ret[f'grad{sidx}'] = np.stack([grad[tidx, ...] for tidx in track_ind], axis=0)
+          if has_right:
+            ret[f'imr{sidx}'] = np.stack([imr[tidx, ...] for tidx in track_ind], axis=0)
         else:
           ret[f'im{sidx}'] = np.stack([cv2.resize(im[tidx, 0, ...], self.imsizes[sidx][::-1])[None] for tidx in track_ind], axis=0)
           ret[f'ambient{sidx}'] = np.stack([cv2.resize(amb[tidx, 0, ...], self.imsizes[sidx][::-1])[None] for tidx in track_ind], axis=0)
           ret[f'grad{sidx}'] = np.stack([cv2.resize(grad[tidx, 0, ...], self.imsizes[sidx][::-1])[None] for tidx in track_ind], axis=0)
+          if has_right:
+            ret[f'imr{sidx}'] = np.stack([cv2.resize(imr[tidx, 0, ...], self.imsizes[sidx][::-1])[None] for tidx in track_ind], axis=0)
 
       # load disp and grad only at full resolution
       ret[f'disp0'] = np.stack([sample_frames['disp'][tidx, ...] for tidx in track_ind], axis=0)
@@ -129,6 +136,9 @@ class TrackSynDataset(base_dataset.BaseDataset):
       for sidx in range(len(self.imsizes)):
         if sidx==0:
           img = ret[f'im{sidx}']
+          if has_right:
+            imgr = ret[f'imr{sidx}']
+
           amb = ret[f'ambient{sidx}']
           disp = ret[f'disp{sidx}']
           if self.load_primary_data:
@@ -168,6 +178,8 @@ class TrackSynDataset(base_dataset.BaseDataset):
               sgm_disp_aug[i] = sgm_disp_aug_[None].astype(np.float32)
             grad_aug[i] = grad_aug_[None].astype(np.float32)
           ret[f'im{sidx}'] = img_aug
+          if has_right:
+            ret[f'imr{sidx}'] = imgr
           ret[f'ambient{sidx}'] = amb_aug
           ret[f'disp{sidx}'] = disp_aug
           if self.load_primary_data:
@@ -184,6 +196,8 @@ class TrackSynDataset(base_dataset.BaseDataset):
                                            max_noise=self.max_noise, max_sp_noise=self.max_sp_noise)
             img_aug[i] = img_aug_[None].astype(np.float32)
           ret[f'im{sidx}'] = img_aug
+          if has_right:
+            ret[f'imr{sidx}'] = imgr
 
     return ret
 

@@ -376,6 +376,52 @@ class RectifiedPatternSimilarityLoss(TimedModule):
       val = diff
     return val, pattern_proj
 
+class RectifiedSimilarityLoss(TimedModule):
+  '''
+  Photometric Loss
+  '''
+
+  def __init__(self, im_height, im_width, loss_type='census_sad', loss_eps=0.5):
+    super().__init__(mod_name='RectifiedPatternSimilarityLoss')
+    self.im_height = im_height
+    self.im_width = im_width
+    #self.pattern = pattern.mean(dim=1, keepdim=True).contiguous()
+
+    u, v = np.meshgrid(range(im_width), range(im_height))
+    uv0 = np.stack((u, v), axis=2).reshape(-1, 1)
+    uv0 = uv0.astype(np.float32).reshape(1, -1, 2)
+    self.uv0 = torch.from_numpy(uv0)
+
+    self.loss_type = loss_type
+    self.loss_eps = loss_eps
+
+  def tforward(self, disp0, im, im_right, std=None):
+    baseline_correction = 0.0634 / 0.07501
+    disp0 = disp0 * baseline_correction
+    #self.pattern = self.pattern.to(disp0.device)
+    self.uv0 = self.uv0.to(disp0.device)
+    #cv2.imshow("im", im[0,0,:,:].detach().cpu().numpy())
+    #cv2.imshow("im_right", im_right[0,0,:,:].detach().cpu().numpy())
+    #cv2.waitKey()
+    uv0 = self.uv0.expand(disp0.shape[0], *self.uv0.shape[1:])
+    uv1 = torch.empty_like(uv0)
+    uv1[..., 0] = uv0[..., 0] - disp0.contiguous().view(disp0.shape[0], -1)
+    uv1[..., 1] = uv0[..., 1]
+
+    uv1[..., 0] = 2 * (uv1[..., 0] / (self.im_width - 1) - 0.5)
+    uv1[..., 1] = 2 * (uv1[..., 1] / (self.im_height - 1) - 0.5)
+    uv1 = uv1.view(-1, self.im_height, self.im_width, 2).clone()
+    #pattern = self.pattern.expand(disp0.shape[0], *self.pattern.shape[1:])
+    # (simon) todo: check if the align_corners option here is used as desired. (default: align_corners = false)
+    im_right_proj = torch.nn.functional.grid_sample(im_right, uv1, padding_mode='border', align_corners=True)
+    mask = torch.ones_like(im)
+    if std is not None:
+      mask = mask * std
+
+    diff = ext_functions.photometric_loss(im_right_proj.contiguous(), im.contiguous(), 7, self.loss_type, self.loss_eps) # 9
+    val = (mask * diff).sum() / mask.sum()
+    return val, im_right_proj
+
 class SSIM(TimedModule):
   """Layer to compute the SSIM loss between a pair of images
   """
