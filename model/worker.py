@@ -60,10 +60,13 @@ import argparse
 import socket
 import gc
 import json
+import matplotlib
 import matplotlib.pyplot as plt
 import time
 from collections import OrderedDict
 from model import networks
+
+matplotlib.use('TkAgg')#use('qtagg')
 
 
 class StopWatch(object):
