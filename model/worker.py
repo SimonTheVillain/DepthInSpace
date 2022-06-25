@@ -141,6 +141,7 @@ class Worker(object):
     self.architecture = args.architecture
     self.epochs = args.epochs
     self.warmup_epochs = args.warmup_epochs
+    self.warmup_gt_epochs = args.warmup_gt_epochs
     self.seed = seed
     self.train_batch_size = args.train_batch_size
     self.use_stereo = args.use_stereo

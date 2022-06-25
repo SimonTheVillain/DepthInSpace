@@ -172,6 +172,12 @@ class Worker(worker.Worker):
           val = torch.sum(torch.abs(o - self.data['sgm_disp'] + 1.5 * torch.randn(o.size()).cuda()) * valid_mask) / torch.sum(valid_mask)
           vals.append(val * 0.1)
 
+    if train and self.data_type == 'synthetic':
+      if self.current_epoch < self.warmup_gt_epochs:
+        for s, o in zip(itertools.count(), out):
+          val = torch.mean(torch.abs(o - self.data['disp0']))
+          vals.append(val * 0.1)
+
     return vals
 
   def numpy_in_out(self, output):

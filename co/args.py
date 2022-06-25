@@ -45,6 +45,10 @@ def parse_args():
     parser.add_argument('--warmup_epochs',
                         help='Number of epochs where SGM Disparities are used as supervisor when training on the real dataset',
                         default=150, type=int)
+
+    parser.add_argument('--warmup_gt_epochs',
+                        help='Number of epochs where the rendered Groundtruth Disparities are used as supervisor when training on the synthetic dataset',
+                        default=10, type=int)
     #
     parser.add_argument('--lcn_radius',
                         help='Radius of the window for LCN pre-processing',

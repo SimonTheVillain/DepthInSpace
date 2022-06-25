@@ -1,7 +1,7 @@
 {
-  "OUTPUT_DIR": "/media/simon/LaCie/datasets/DepthInSpaceArtificialResults",
+  "OUTPUT_DIR": "/media/simon/sandisk/datasets/structure_core_unity_sequences_DIS_results2",
   "DATA_DIR": "/media/simon/sandisk/datasets/structure_core_unity_sequences_DIS",
   "SHAPENET_DIR": "/media/simon/WD/datasets/ShapeNetCore.v2",
-  "CTD_DIR": "/home/simon/python/connecting_the_dots",
+  "CTD_DIR": "/home/simon/projects/connecting_the_dots",
   "LITEFLOWNET_DIR": "/home/simon/projects/pytorch-liteflownet"
 }
