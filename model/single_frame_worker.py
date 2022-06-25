@@ -112,12 +112,12 @@ class Worker(worker.Worker):
     # apply photometric loss
     for s,o in zip(itertools.count(), out):
       im = self.data[f'im0']
-      imr = self.data[f"imr0"]
       im = im.view(-1, *im.shape[2:])
       o = o.view(-1, *o.shape[2:])
       std = self.data[f'std0']
       std = std.view(-1, *std.shape[2:])
       if self.use_stereo:
+        imr = self.data[f"imr0"]
         imr = imr.view(-1, *imr.shape[2:])
         val, pattern_proj = self.ph_losses[0](o, im[:,0:1,...], imr[:,0:1,...], std)
       else:
