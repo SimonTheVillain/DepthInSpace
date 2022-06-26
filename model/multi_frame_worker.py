@@ -27,6 +27,7 @@ import torch
 import numpy as np
 import logging
 import itertools
+import matplotlib
 import matplotlib.pyplot as plt
 import co
 
@@ -36,6 +37,8 @@ from data import dataset
 from model import networks
 
 from . import worker
+
+matplotlib.use('TkAgg')#use('qtagg')
 
 class Worker(worker.Worker):
   def __init__(self, args, **kwargs):
