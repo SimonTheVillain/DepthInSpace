@@ -179,7 +179,7 @@ class Worker(worker.Worker):
       if self.current_epoch < self.warmup_gt_epochs:
         for s, o in zip(itertools.count(), out):
           val = torch.mean(torch.abs(o - self.data['disp0']))
-          vals.append(val * 0.1)
+          vals.append(val * 0.1 / (2 ** s))
 
     return vals
 
