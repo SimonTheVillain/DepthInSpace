@@ -418,7 +418,7 @@ class RectifiedSimilarityLoss(TimedModule):
     if std is not None:
       mask = mask * std
 
-    diff = ext_functions.photometric_loss(im_right_proj.contiguous(), im.contiguous(), 7, self.loss_type, self.loss_eps) # 9
+    diff = ext_functions.photometric_loss(im_right_proj.contiguous(), im.contiguous(), 9, self.loss_type, self.loss_eps)
     val = (mask * diff).sum() / mask.sum()
     return val, im_right_proj
 
