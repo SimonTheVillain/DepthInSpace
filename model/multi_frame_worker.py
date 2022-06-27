@@ -38,7 +38,7 @@ from model import networks
 
 from . import worker
 
-matplotlib.use('TkAgg')#use('qtagg')
+matplotlib.use('Agg')#use('qtagg')
 
 class Worker(worker.Worker):
   def __init__(self, args, **kwargs):

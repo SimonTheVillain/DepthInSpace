@@ -38,7 +38,7 @@ from model import networks
 
 from . import worker
 
-matplotlib.use('TkAgg')#todo: in connecting the dots 'Agg' seemed to work as backend
+matplotlib.use('Agg')#todo: in connecting the dots 'Agg' seemed to work as backend using 'tkAgg' is a wildcard
 
 class Worker(worker.Worker):
   def __init__(self, args, **kwargs):
