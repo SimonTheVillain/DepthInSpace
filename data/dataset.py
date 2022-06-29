@@ -198,7 +198,11 @@ class TrackSynDataset(base_dataset.BaseDataset):
           ret[f'im{sidx}'] = img_aug
           if has_right:
             ret[f'imr{sidx}'] = imgr
-
+    for key in ret:
+      value = ret[key]
+      if isinstance(value, np.ndarray):
+        if np.any(np.isnan(value)):
+          print(f"{key} has nans")
     return ret
 
   def getK(self, sidx=0):
